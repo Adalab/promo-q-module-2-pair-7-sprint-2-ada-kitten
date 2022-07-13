@@ -14,29 +14,49 @@ const inputRace = document.querySelector('.js-input-race')
 const linkNewFormElememt = document.querySelector('.js-button-new-form');
 const labelMesageError = document.querySelector('.js-label-error');
 const input_search_desc = document.querySelector('.js_in_search_desc');
+const input_search_race = document.querySelector('.js_in_search_race');
+
+const GITHUB_USER = 'vvarona';
+const SERVER_URL = `https://adalab-api.herokuapp.com/api/kittens/${GITHUB_USER}`;
+
+const kittenListStored = JSON.parse(localStorage.getItem('kittensList'));
 
 
-//Objetos con cada gatito
-const kittenData_1 = {
-    image: "https://ychef.files.bbci.co.uk/976x549/p07ryyyj.jpg",
-    name: "Anastacio",
-    desc: "Ruiseño, juguetón, le guta estar tranquilo y que nadie le moleste. Es una maravilla acariciarle!",
-    race: "British Shorthair",
-};
-const kittenData_2 = {
-    image: "https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1200-630,f_auto,q_auto:best/newscms/2019_39/3021711/190923-cat-pet-stock-cs-1052a.jpg",
-    name: "Fiona",
-    desc: "Juguetón, le guta estar tranquilo y que nadie le moleste. Es una maravilla acariciarle!",
-    race: "British Shorthair",
-};
-const kittenData_3 = {
-    image: "https://images.emedicinehealth.com/images/article/main_image/cat-scratch-disease.jpg",
-    name: "Cielo",
-    desc: "Ruiseño, juguetón, le guta estar tranquilo y que nadie le moleste. Es una maravilla acariciarle!",
-    race: "British Shorthair",
-};
+if (kittenListStored) {
+    //si existe el listado de gatitos en el local storage
+    // vuelve a pintar el listado de gatitos
+    //...
+    //completa el código...
+    renderKittenList(kittenData.results);
+  } else {
+    //sino existe el listado de gatitos en el local storage
+    //haz la petición al servidor
+    fetch(SERVER_URL)
+      .then((response) => response.json())
+      .then(function (kittenData) {
+        kittenDataList.push(kittenData.results);
+        renderKittenList(kittenData.results);
+      });
+     /*  .catch((error) => {
+        console.error(error);
+      }); */
+  }
 
-const kittenDataList = [kittenData_1, kittenData_2, kittenData_3];
+
+/* fetch(SERVER_URL, {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+  })
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (kittenData) {
+    kittenDataList.push(kittenData.results);
+    renderKittenList(kittenData.results);
+  });
+ */
+//Array de Gatitos
+let kittenDataList = [];
 
 //Funciones
 function renderKitten(kittenData) {
@@ -44,7 +64,7 @@ function renderKitten(kittenData) {
     <article>
       <img
         class="card_img"
-        src=${kittenData.image}
+        src=${kittenData.url}
         alt="gatito"
       />
       <h3 class="card_title">${kittenData.name}</h3>
@@ -121,12 +141,16 @@ function cancelNewKitten(event) {
 function filterKitten(event) {
     event.preventDefault();
     const descrSearchText = input_search_desc.value;
+    const raceSearchText =  input_search_race.value;
     listElement.innerHTML = "";
    /*  for (const kittenItem of kittenDataList) {
         if (kittenItem.desc.includes(descrSearchText)) { */
-        const kittenItem = kittenDataList.filter((kittenItem) => (kittenItem.desc.includes(descrSearchText)));
-        
-            listElement.innerHTML += renderKitten(kittenItem);
+        const kittenItem = kittenDataList.filter((kittenItem) => (kittenItem.desc.includes(descrSearchText) && kittenItem.race.includes(raceSearchText)));
+            
+        kittenItem.forEach(kitten => {
+            listElement.innerHTML += renderKitten(kitten);
+        });
+            
         }
 /*     }
 }
